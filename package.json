@@ -1,0 +1,29 @@
+{
+  "name": "mongosmash",
+  "version": "0.0.0",
+  "description": "A JS Harmony MongoDB/NeDB ODM",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/mongosmashtest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bengl/mongosmash.git"
+  },
+  "keywords": [
+    "mongodb",
+    "mongo",
+    "nedb",
+    "orm",
+    "odm",
+    "observe"
+  ],
+  "author": "Bryan English <bryan@bryanenglish.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bengl/mongosmash/issues"
+  },
+  "dependencies": {
+    "observed": "0.0.3"
+  }
+}
