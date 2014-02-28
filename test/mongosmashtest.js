@@ -1,39 +1,76 @@
 var assert = require('assert');
 var MongoSmash = require('../index');
+var nedb = require('nedb');
+var mongo = require('mongodb');
 
-var DB = {
-  collection: function(){
-    return {
-      insert: function(){
-        console.log('insert:', arguments);
-        arguments[1](null, arguments[0]);
-      },
-      update: function(){
-        console.log('update:', arguments);
-        arguments[arguments.length-1]();
-      },
-      remove: function(){
-        console.log('remove:', arguments);
-        arguments[arguments.length-1]();
-      },
-      find:   function(){
-        console.log('find:', arguments);
-        arguments[arguments.length-1]();
+function commonTests(type) {
+  context(type, function(){
+    var smash;
+
+    before(function(done){
+      if (type === 'nedb') {
+        smash = new MongoSmash(nedb);
+        done();
+      } else if (type === 'mongodb') {
+        var mongodb = require('mongodb').MongoClient;
+        mongodb.connect('mongodb://127.0.0.1:27017/test', function(err, db){
+          if (err) throw err;
+
+          smash = new MongoSmash(db);
+          done();
+        });
       }
-    };
-  }
-};
+    });
 
-var smash = MongoSmash(DB);
+    if (type === 'mongodb') {
+      after(function(done){
+        smash.db.collection('things').drop(done);
+      });
+    }
 
-var o = {hello: 'ok'};
+    it('new, save, find, delete, and ensure deletion', function(done){
+      var o = {};
+      smash.new('things', o);
+      o.hello = 'ok';
+      smash.save(o, function(err, thing){
+        assert.ifError(err);
+        assert(thing);
+        assert.equal(Object.keys(thing).length, 2);
+        assert.equal(thing.hello, 'ok');
+        assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
+        smash.find('things', {_id: thing._id}, function(err, newThings){
+          var newThing = newThings[0];
+          assert.ifError(err);
+          assert.deepEqual(thing, newThing);
+          smash.delete(newThing, function(err){
+            assert.ifError(err);
+            smash.find('things', {_id: newThing._id}, function(err, delThings){
+              assert.ifError(err);
+              assert.equal(delThings.length, 0);
+              done();
+            });
+          });
+        });
+      });
+    });
 
-smash.create('thing', o, function(err, thing){
-  assert.ifError(err);
-  o.yo = 'sup';
-  smash.save(o, function(err, thing){
-    assert.ifError(err);
+    it('create', function(done){
+      smash.create('things', {hello: 'ok'}, function(err, thing){
+        assert.ifError(err);
+        assert(thing);
+        assert.equal(Object.keys(thing).length, 2);
+        assert.equal(thing.hello, 'ok');
+        assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
+        done();
+      });
+    });
   });
+}
+
+describe('MongoSmash', function(){
+  commonTests('nedb');
+  commonTests('mongodb');
 });
+
 
 
