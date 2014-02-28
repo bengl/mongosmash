@@ -4,7 +4,7 @@
 
 **MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you treat a JavaScript object as normal, and have changes persisted to MongoDB or NeDB. MongoSmash is implemented using `Object.observe`, and so is subject to its limitations on changes it can track, and requires Node 0.11.10+. You'll need to invoke node with the `--harmony` flag.
 
-**WARNING: MongoSmash is incomplete. I'm just starting to explore this idea. It probably doesn't even work yet. Do not use, unless you're willing to fix it and make it actually work.**
+**WARNING: MongoSmash is incomplete. It works, but it's missind a lot of features!**
 
 ### Example
 
@@ -37,6 +37,33 @@ require('mongodb').MongoClient.connect(dbURI, function(err, db) {
 });
 ```
 
-##LICENSE
+## API
+
+### `new MongoSmash(db)`
+You **must** pass in either an already-connected MongoDB connection (from
+`nove-mongodb-native`) or the NeDB module in its entirety. For the moment, only
+in-memory NeDB is supported.
+
+### `#new(modelName, obj)`
+Sets up an object (`obj`) to have its changes tracked so we can `save()` it
+later. The `modelName` is equivalent to a MongoDB collection name. If you're
+doing this, you probably actually want `create`.
+
+### `#save(obj, callback)`
+Does a MongoDB `insert` or `update` depending on the current status of the
+object. The error-first-style `callback`, which will call with a resultant
+object if it's a new object. The new object will also have a brand-new `_id`.
+
+### `#create(modelName, obj, callback)`
+Runs `new` and then `save` immediately.
+
+### `#find(query, callback)`
+Calls the `callback` error-first-style with an array of objects matching the
+MongoDB `query`. For the moment, projections are not supported.
+
+### `#delete(obj, callback)`
+Deletes `obj` from the database, callback only takes in error.
+
+## LICENSE
 
 See LICENSE.txt
