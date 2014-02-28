@@ -4,7 +4,7 @@
   "description": "A JS Harmony MongoDB/NeDB ODM",
   "main": "index.js",
   "scripts": {
-    "test": "node test/mongosmashtest"
+    "test": "./node_modules/.bin/mocha --harmony"
   },
   "repository": {
     "type": "git",
