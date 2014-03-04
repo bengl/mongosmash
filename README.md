@@ -37,6 +37,32 @@ require('mongodb').MongoClient.connect(dbURI, function(err, db) {
 });
 ```
 
+## Benchmarks
+
+You can run the benchmarks yourself as shown below. The results here are from
+my `MacBookAir5,2`. `K-ops/sec` means "thousand calls of the given function per
+second", so higher is better.
+
+```
+$ node -v
+v0.11.11
+$ node --harmony bench/test.js
+-------
+mongosmash - new: 51.521 K-ops/sec
+mongosmash - save: 3.124 K-ops/sec
+mongosmash - find: 2.711 K-ops/sec
+mongosmash - edit: 197.436 K-ops/sec
+mongosmash - saved edited: 4.677 K-ops/sec
+mongosmash - delete: 6.76 K-ops/sec
+-------
+mongoose - new: 26.646 K-ops/sec
+mongoose - save: 2.711 K-ops/sec
+mongoose - find: 2.393 K-ops/sec
+mongoose - edit: 104.37 K-ops/sec
+mongoose - saved edited: 2.775 K-ops/sec
+mongoose - delete: 6.026 K-ops/sec
+```
+
 ## API
 
 ### `new MongoSmash(db)`
@@ -63,6 +89,12 @@ MongoDB `query`. For the moment, projections are not supported.
 
 ### `#delete(obj, callback)`
 Deletes `obj` from the database, callback only takes in error.
+
+## Contributing
+
+Please do! Pull requests, bug reports and feature requests are more than 
+welcome, and should be done using Github PRs and Issues. Please try to conform
+to existing style (though I'm not very stylish), and don't forget testsand docs!
 
 ## LICENSE
 
