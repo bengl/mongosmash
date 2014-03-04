@@ -54,14 +54,19 @@ function commonTests(type) {
       });
     });
 
-    it('create', function(done){
+    it('create and findOne', function(done){
       smash.create('things', {hello: 'ok'}, function(err, thing){
         assert.ifError(err);
         assert(thing);
         assert.equal(Object.keys(thing).length, 2);
         assert.equal(thing.hello, 'ok');
         assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
-        done();
+        smash.findOne('things', {_id: thing._id}, function(err, result) {
+          assert.ifError(err);
+          assert(result);
+          assert.deepEqual(result, thing);
+          done();
+        });
       });
     });
   });
