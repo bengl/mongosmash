@@ -2,9 +2,14 @@
 
 ![Mongo only pawn in game of life](http://padresteve.files.wordpress.com/2011/04/blazing-saddles-mongo.gif)
 
-**MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you treat a JavaScript object as normal, and have changes persisted to MongoDB or NeDB. MongoSmash is implemented using `Object.observe`, and so is subject to its limitations on changes it can track, and requires Node 0.11.10+. You'll need to invoke node with the `--harmony` flag.
+**MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you
+treata JavaScript object as normal, and have changes persisted to MongoDB or
+NeDB. MongoSmash is implemented using `Object.observe`, and so is subject toits
+limitations on changes it can track, and requires Node 0.11.10+. You'll need to
+invoke node with the `--harmony` flag.
 
-**WARNING: MongoSmash is incomplete. It works, but it's missind a lot of features!**
+**WARNING: MongoSmash is incomplete. It works, but it's missind a lot of
+features!**
 
 ### Example
 
@@ -63,6 +68,11 @@ mongoose - saved edited: 2.775 K-ops/sec
 mongoose - delete: 6.026 K-ops/sec
 ```
 
+Of course a head-to-head comparison with Mongoose isn't necessarily realistic,
+since MongoSmash doesn't do things like validations. I recommend using a tool
+like [revalidator](https://github.com/flatiron/revalidator) to do your object
+validations.
+
 ## API
 
 ### `new MongoSmash(db)`
@@ -94,7 +104,9 @@ Deletes `obj` from the database, callback only takes in error.
 
 Please do! Pull requests, bug reports and feature requests are more than 
 welcome, and should be done using Github PRs and Issues. Please try to conform
-to existing style (though I'm not very stylish), and don't forget testsand docs!
+to existing style (though I'm not very stylish), and don't forget tests and
+docs! Also, if making a performance improvement, feel free to update the
+benchmark data.
 
 ## LICENSE
 
