@@ -69,6 +69,22 @@ function commonTests(type) {
         });
       });
     });
+
+    it('create, modify, save, findOne', function(done){
+      smash.create('things', {hello: {ok: 1}, stuff: 3}, function(err, thing){
+        thing.hello.ok = 2;
+        thing.stuff = 4;
+        thing.other = 5;
+        smash.save(thing, function(err) {
+          assert.ifError(err);
+          smash.findOne('things', {_id: thing._id}, function(err, result) {
+            assert.ifError(err);
+            assert.deepEqual(thing, result);
+            done();
+          });
+        });
+      });
+    });
   });
 }
 
