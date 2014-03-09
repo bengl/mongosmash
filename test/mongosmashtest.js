@@ -1,4 +1,4 @@
-var assert = require('assert');
+var assert = require('chai').assert;
 var MongoSmash = require('../index');
 var nedb = require('nedb');
 var mongo = require('mongodb');
@@ -71,13 +71,15 @@ function commonTests(type) {
     });
 
     it('create, modify, save, findOne', function(done){
-      smash.create('things', {hello: {ok: 1}, stuff: 3}, function(err, thing){
+      smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]}, function(err, thing){
         thing.hello.ok = 2;
         thing.stuff = 4;
         thing.other = 5;
+        thing.arr.push(2);
         smash.save(thing, function(err) {
           assert.ifError(err);
           smash.findOne('things', {_id: thing._id}, function(err, result) {
+            assert(result.arr[1] === 2);
             assert.ifError(err);
             assert.deepEqual(thing, result);
             done();
