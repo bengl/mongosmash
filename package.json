@@ -1,6 +1,6 @@
 {
   "name": "mongosmash",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A JS Harmony MongoDB/NeDB ODM",
   "main": "index.js",
   "scripts": {
