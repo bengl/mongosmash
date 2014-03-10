@@ -5,7 +5,10 @@ var Cat = mongoose.model('Cat', { name: String });
 
 var iterations = 1000;
 
-function bench(txt, fn, done){
+var results = {mongoose:{}, mongosmash:{}};
+
+function bench(engine, txt, fn, done){
+  process.stdout.write('.');
   var did = 0;
   var time = process.hrtime();
   for (var i = 0; i < iterations; i++)
@@ -14,7 +17,7 @@ function bench(txt, fn, done){
       if (did === iterations) {
         var diff = process.hrtime(time);
         var ops = iterations/((diff[0] * 1e9 + diff[1])/1e9);
-        console.log(txt+':', (Math.round(ops)/1000).toLocaleString(), 'K-ops/sec');
+        results[engine][txt] = (Math.round(ops)/1000);
         done();
       }
     });
@@ -41,7 +44,7 @@ var smashTests = {
     global.smash.find('cat', {name: 'cat'+i}, function(err, kitties){
       cats[i] = kitties[0];
       cb();
-    }); 
+    });
   },
   edit: function(i, cb){
     cats[i].name = 'kitty'+i;
@@ -91,15 +94,14 @@ var gooseTests = {
 
 function test(funcs, done) {
   setImmediate(function(){
-    console.log('-------');
     global.cats = [];
     funcs.setup(function(){
-      bench(funcs.name+' - new', funcs.new, function(){
-        bench(funcs.name+' - save', funcs.save, function(){
-          bench(funcs.name+' - find', funcs.find, function(){
-            bench(funcs.name+' - edit', funcs.edit,function(){
-              bench(funcs.name+' - saved edited', funcs.savedEdit, function(){
-                bench(funcs.name+' - delete', funcs.delete, function(){
+      bench(funcs.name, 'new', funcs.new, function(){
+        bench(funcs.name, 'save', funcs.save, function(){
+          bench(funcs.name, 'find', funcs.find, function(){
+            bench(funcs.name, 'edit', funcs.edit,function(){
+              bench(funcs.name, 'saved edited', funcs.savedEdit, function(){
+                bench(funcs.name, 'delete', funcs.delete, function(){
                   funcs.drop(done);
                 });
               });
@@ -111,5 +113,33 @@ function test(funcs, done) {
   });
 }
 
+function pad(str, len) {
+  var newStr = ''+str;
+  var diff = len - newStr.length;
+  while (diff-- > 0) {
+    newStr += ' ';
+  }
+  return newStr;
+}
 
-test(smashTests, function(){test(gooseTests, function(){ process.exit()})});
+function resultPrinter() {
+  console.log('\n');
+  console.log('OPERATION     | MONGOOSE KOps/s | MONGOSMASH KOps/s | DIFF %')
+  console.log('------------------------------------------------------------');
+  Object.keys(results.mongoose).forEach(function(op){
+    var goose = results.mongoose[op], smash = results.mongosmash[op];
+    var diff = (100*(smash - goose)/goose).toFixed(2);
+    var line = [pad(op, 13), pad(goose, 15), pad(smash, 17), diff].join(' | ');
+    console.log(line);
+  });
+  process.exit();
+}
+
+// Warm up by running both tests, then run them both again for real.
+test(smashTests, function(){
+  test(gooseTests, function(){
+    test(smashTests, function(){
+      test(gooseTests, resultPrinter);
+    });
+  });
+});

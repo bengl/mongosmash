@@ -55,21 +55,22 @@ second", so higher is better.
 ```
 $ node -v
 v0.11.11
-$ node --harmony bench/test.js
--------
-mongosmash - new: 51.521 K-ops/sec
-mongosmash - save: 3.124 K-ops/sec
-mongosmash - find: 2.711 K-ops/sec
-mongosmash - edit: 197.436 K-ops/sec
-mongosmash - saved edited: 4.677 K-ops/sec
-mongosmash - delete: 6.76 K-ops/sec
--------
-mongoose - new: 26.646 K-ops/sec
-mongoose - save: 2.711 K-ops/sec
-mongoose - find: 2.393 K-ops/sec
-mongoose - edit: 104.37 K-ops/sec
-mongoose - saved edited: 2.775 K-ops/sec
-mongoose - delete: 6.026 K-ops/sec
+$ npm run bench
+
+> mongosmash@0.1.0 bench /Users/benglish/mongosmash
+> node --harmony bench/test
+
+Failed to load c++ bson extension, using pure JS version
+........................
+
+OPERATION     | MONGOOSE KOps/s | MONGOSMASH KOps/s | DIFF %
+------------------------------------------------------------
+new           | 34.026          | 98.806            | 190.38
+save          | 3.504           | 4.999             | 42.67
+find          | 2.627           | 2.91              | 10.77
+edit          | 55.441          | 174.096           | 214.02
+saved edited  | 2.425           | 3.946             | 62.72
+delete        | 5.915           | 6.99              | 18.17
 ```
 
 Of course a head-to-head comparison with Mongoose isn't necessarily realistic,
