@@ -111,7 +111,7 @@ Please do! Pull requests, bug reports and feature requests are more than
 welcome, and should be done using Github PRs and Issues. Please try to conform
 to existing style (though I'm not very stylish), and don't forget tests and
 docs! Also, if making a performance improvement, feel free to update the
-benchmark data.
+benchmark data. TODOs are in Github Issues.
 
 ## LICENSE
 
