@@ -7,12 +7,12 @@
 [![Dependency Status](https://gemnasium.com/bengl/mongosmash.png)](https://gemnasium.com/bengl/mongosmash)
 
 **MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you
-treata JavaScript object as normal, and have changes persisted to MongoDB or
-NeDB. MongoSmash is implemented using `Object.observe`, and so is subject toits
+treat JavaScript object as normal, and have changes persisted to MongoDB or
+NeDB. MongoSmash is implemented using `Object.observe`, and so is subject to its
 limitations on changes it can track, and requires Node 0.11.10+. You'll need to
 invoke node with the `--harmony` flag.
 
-**WARNING: MongoSmash is incomplete. It works, but it's missind a lot of
+**WARNING: MongoSmash is incomplete. It works, but it's missing a lot of
 features!**
 
 ### Example
