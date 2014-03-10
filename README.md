@@ -3,6 +3,8 @@
 ![Mongo only pawn in game of life](http://padresteve.files.wordpress.com/2011/04/blazing-saddles-mongo.gif)
 
 [![Build Status](https://travis-ci.org/bengl/mongosmash.png?branch=master)](https://travis-ci.org/bengl/mongosmash)
+[![Code Climate](https://codeclimate.com/github/bengl/mongosmash.png)](https://codeclimate.com/github/bengl/mongosmash)
+[![Dependency Status](https://gemnasium.com/bengl/mongosmash.png)](https://gemnasium.com/bengl/mongosmash)
 
 **MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you
 treata JavaScript object as normal, and have changes persisted to MongoDB or
