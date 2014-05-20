@@ -4,7 +4,7 @@ var observed = require('observed');
 
 describe('queryGenerator', function(){
   var obj, q, changelist;
-  before(function(done){
+  before(function(){
     obj = {
       hello: {ok: 1},
       doublePlus: 2,
@@ -17,7 +17,7 @@ describe('queryGenerator', function(){
     };
     changelist = [];
     var observer = observed(obj);
-    observer.on('changed', observedHandler);
+    observer.on('change', observedHandler);
     obj.hello.ok = 2;
     obj.doublePlus = 3;
     obj.doublePlus = 5;
@@ -32,10 +32,8 @@ describe('queryGenerator', function(){
     delete obj.changeDelete;
     delete obj.deleteReset;
     obj.deleteReset = 'k';
-    setImmediate(function(){
-      q = queryGenerator(changelist, {isNeDB: false}).update;
-      done();
-    });
+    observer.deliverChanges();
+    q = queryGenerator(changelist, {isNeDB: false}).update;
 
     function observedHandler(changes) {
       if (!Array.isArray(changes)) changes = [changes];

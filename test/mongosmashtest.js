@@ -72,6 +72,7 @@ function commonTests(type) {
 
     it('create, modify, save, findOne', function(done){
       smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]}, function(err, thing){
+        assert.ifError(err);
         thing.hello.ok = 2;
         thing.stuff = 4;
         thing.other = 5;
