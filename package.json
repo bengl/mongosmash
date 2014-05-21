@@ -25,6 +25,7 @@
     "url": "https://github.com/bengl/mongosmash/issues"
   },
   "dependencies": {
+    "bluebird": "^1.2.4",
     "observed": "0.0.3"
   },
   "devDependencies": {
