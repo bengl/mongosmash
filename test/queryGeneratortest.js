@@ -1,4 +1,4 @@
-var assert = require('chai').assert;
+var assert = require('assert');
 var queryGenerator = require('../lib/queryGenerator');
 var observed = require('observed');
 

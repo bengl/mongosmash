@@ -1,92 +1,71 @@
-var assert = require('chai').assert;
+var assert = require('assert');
 var MongoSmash = require('../index');
 var nedb = require('nedb');
-var mongo = require('mongodb');
+var Promise = require('bluebird');
+var mongodb = Promise.promisifyAll(require('mongodb').MongoClient);
+require('co-mocha');
+
+var url = 'mongodb://127.0.0.1:27017/test';
 
 function commonTests(type) {
   context(type, function(){
     var smash;
 
-    before(function(done){
+    before(function*(){
       if (type === 'nedb') {
         smash = new MongoSmash(nedb);
-        done();
       } else if (type === 'mongodb') {
         var mongodb = require('mongodb').MongoClient;
-        mongodb.connect('mongodb://127.0.0.1:27017/test', function(err, db){
-          if (err) throw err;
-
-          smash = new MongoSmash(db);
-          done();
-        });
+        var db = yield mongodb.connectAsync(url);
+        smash = new MongoSmash(db);
       }
     });
 
     if (type === 'mongodb') {
-      after(function(done){
-        smash.db.collection('things').drop(done);
+      after(function*(){
+        yield Promise.promisifyAll(smash.db.collection('things')).dropAsync();
       });
     }
 
-    it('new, save, find, delete, and ensure deletion', function(done){
+    it('new, save, find, delete, and ensure deletion', function*(){
       var o = {};
       smash.new('things', o);
       o.hello = 'ok';
-      smash.save(o, function(err, thing){
-        assert.ifError(err);
-        assert(thing);
-        assert.equal(Object.keys(thing).length, 2);
-        assert.equal(thing.hello, 'ok');
-        assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
-        smash.find('things', {_id: thing._id}, function(err, newThings){
-          var newThing = newThings[0];
-          assert.ifError(err);
-          assert.deepEqual(thing, newThing);
-          smash.delete(newThing, function(err){
-            assert.ifError(err);
-            smash.find('things', {_id: newThing._id}, function(err, delThings){
-              assert.ifError(err);
-              assert.equal(delThings.length, 0);
-              done();
-            });
-          });
-        });
-      });
+      var thing = yield smash.save(o);
+      assert(thing);
+      assert.equal(Object.keys(thing).length, 2);
+      assert.equal(thing.hello, 'ok');
+      assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
+      var newThings = yield smash.find('things', {_id: thing._id});
+      newThing = newThings[0];
+      assert.deepEqual(thing, newThing);
+      yield smash.delete(newThing);
+      var delThings = yield smash.find('things', {_id: newThing._id});
+      assert.equal(delThings.length, 0);
     });
 
-    it('create and findOne', function(done){
-      smash.create('things', {hello: 'ok'}, function(err, thing){
-        assert.ifError(err);
-        assert(thing);
-        assert.equal(Object.keys(thing).length, 2);
-        assert.equal(thing.hello, 'ok');
-        assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
-        smash.findOne('things', {_id: thing._id}, function(err, result) {
-          assert.ifError(err);
-          assert(result);
-          assert.deepEqual(result, thing);
-          done();
-        });
-      });
+    it('create and findOne', function*(){
+      var thing = yield smash.create('things', {hello: 'ok'});
+      assert(thing);
+      assert.equal(Object.keys(thing).length, 2);
+      assert.equal(thing.hello, 'ok');
+      assert.equal(typeof thing._id, type === 'nedb' ? 'string' : 'object');
+      var result = yield smash.findOne('things', {_id: thing._id});
+      assert(result);
+      assert.deepEqual(result, thing);
     });
 
-    it('create, modify, save, findOne', function(done){
-      smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]}, function(err, thing){
-        assert.ifError(err);
-        thing.hello.ok = 2;
-        thing.stuff = 4;
-        thing.other = 5;
-        thing.arr.push(2);
-        smash.save(thing, function(err) {
-          assert.ifError(err);
-          smash.findOne('things', {_id: thing._id}, function(err, result) {
-            assert(result.arr[1] === 2);
-            assert.ifError(err);
-            assert.deepEqual(thing, result);
-            done();
-          });
-        });
-      });
+    it('create, modify, save, findOne', function*(){
+      var thing = yield smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]});
+      thing.hello.ok = 2;
+      thing.stuff = 4;
+      thing.other = 5;
+      thing.arr.push(2);
+      yield smash.save(thing);
+      var result = yield smash.findOne('things', {_id: thing._id});
+      assert(result);
+      assert(result.arr[1] === 2);
+      assert.deepEqual(thing, result);
     });
   });
 }
@@ -95,6 +74,3 @@ describe('MongoSmash', function(){
   commonTests('nedb');
   commonTests('mongodb');
 });
-
-
-
