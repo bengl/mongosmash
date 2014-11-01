@@ -25,13 +25,12 @@
     "url": "https://github.com/bengl/mongosmash/issues"
   },
   "dependencies": {
-    "bluebird": "^1.2.4",
-    "observed": "1.0.0"
+    "bluebird": "~2.3.10",
+    "observed": "~1.1.0"
   },
   "devDependencies": {
-    "co-mocha": "0.0.4",
-    "mongodb": "^1.4.5",
-    "mongoose": "~3.8.8",
-    "nedb": "~0.10.4"
+    "mongodb": "~1.4.19",
+    "mongoose": "~3.8.18",
+    "nedb": "~0.11.1"
   }
 }
