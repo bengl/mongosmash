@@ -1,3 +1,12 @@
+macro @ {
+  rule { . } => {
+    this.
+  }
+  rule {} => {
+    this.
+  }
+}
+
 import observed from 'observed';
 import queryGenerator from './queryGenerator';
 import Promise from 'bluebird';
@@ -80,6 +89,26 @@ export default class MongoSmash {
     };
   };
 
+  _insert (model) {
+    return this._dbOp(model, 'insert', arguments);
+  }
+
+  _update (model) {
+    return this._dbOp(model, 'update', arguments);
+  }
+
+  _remove (model) {
+    return this._dbOp(model, 'remove', arguments);
+  }
+
+  _find (model) {
+    return this._dbOp(model, 'find', arguments);
+  }
+
+  _findOne (model) {
+    return this._dbOp(model, 'findOne', arguments);
+  }
+
   find (model, query, cb) {
     return this._find(model, query).then(this._observeResults(model)).nodeify(cb);
   }
@@ -140,9 +169,5 @@ export default class MongoSmash {
   }
 
 }
-
-['insert', 'update', 'remove', 'find', 'findOne'].forEach(function(op){
-  MongoSmash.prototype['_'+op] = function(model) { return this._dbOp(model, op, arguments); };
-});
 
 function idOf(obj) { return {_id: obj._id}; }
