@@ -47,6 +47,7 @@ export function queryGenerator(list, smash){
   delete query._$incoriginal;
   if (!Object.keys(query.$set).length) delete query.$set;
   if (!Object.keys(query.$unset).length) delete query.$unset;
+  if (!Object.keys(query).length) return {};
   return {update: query};
 }
 

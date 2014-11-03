@@ -68,6 +68,20 @@ function commonTests(type) {
     assert(result.arr[1] === 2);
     assert.deepEqual(thing, result);
   });
+
+  it('saving no changes works', function*(){
+    yield smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]});
+    var foundThing = yield smash.findOne('things', {stuff: 3});
+    yield smash.save(foundThing);
+  });
+
+  it('nodeified function works', function (done) {
+    smash.create('things', {hello: {ok: 1}, stuff: 3, arr: [1]}, function (err, result){
+      assert.ifError(err);
+      assert(result);
+      done();
+    });
+  });
 }
 
 describe('MongoSmash', function(){

@@ -120,36 +120,17 @@ export class MongoSmash {
 
   save (obj, cb) {
     let model;
-    function observeAndReturn(result, q) {
-      if (!q.insert && typeof result === 'object') // insert returns same object back. i.e. already observed
-        this._observe(result, model);
-      return result;
-    }
     this.observers.get(obj).deliverChanges();
-    let q = queryGenerator(this.changelists.get(obj), this);
+    let q = queryGenerator(this.changelists.get(obj) || [], this);
     if (q.insert || q.update) model = this.modelnames.get(obj);
-    let after = result => {
-      this.changelists.delete(obj);
-      if (!result) return;
-      if (typeof result === 'object') {
-        if (!Array.isArray(result)) {
-          if (result.toArray){
-            return toArrayPromise(result).then(function(results) {
-              return observeAndReturn(result[0], q);
-            });
-          }
-          return observeAndReturn(result, q);
-        } else if (Array.isArray(result)) {
-          return observeAndReturn(result[0], q);
-        }
-      }
-      return result;
-    };
     return nodeify((
-        q.insert ? this._insert(model, obj) :
-        q.update ? this._update(model, idOf(obj), q.update) :
-        Promise.resolve()
-        ).then(after), cb);
+      q.insert ? this._insert(model, obj) :
+      q.update ? this._update(model, idOf(obj), q.update) :
+      Promise.resolve()
+    ).then(result => {
+      this.changelists.delete(obj);
+      return Array.isArray(result) ? result[0] : result;
+    }), cb);
   }
 
 }
