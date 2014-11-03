@@ -31,18 +31,10 @@ export class MongoSmash {
     this.collections = {};
   }
 
-  _handleChanges (obj, changes) {
-    if (!Array.isArray(changes)) changes = [changes];
+  _handleChanges (obj, change) {
     let lists = this.changelists;
-    for (let i = 0; i < changes.length; i++) {
-      if (!lists.has(obj)) lists.set(obj, [changes[i]]);
-      else if (!Array.isArray(lists.get(obj))) lists.set(obj, []);
-      else {
-        let list = lists.get(obj);
-        if (list.indexOf(changes[i]) === -1)
-          list.push(changes[i]);
-      }
-    }
+    if (!lists.has(obj)) lists.set(obj, [change]);
+    else lists.get(obj).push(change);
   }
 
   _dbOp (model, op, args) {
