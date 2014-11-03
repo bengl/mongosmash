@@ -1,5 +1,5 @@
 var assert = require('assert');
-var queryGenerator = require('../lib/queryGenerator');
+var queryGenerator = require('../lib/queryGenerator').queryGenerator;
 var observed = require('observed');
 
 describe('queryGenerator', function(){

@@ -1,9 +1,9 @@
-module.exports = function(list, smash){
+export function queryGenerator(list, smash){
   if (list.indexOf('insert') >= 0) return {insert: true};
 
   var query = {$set:{}, $unset:{}, _$incoriginal:{}};
   list.forEach(function(change){
-    
+
     if (change.type == 'add') {
       if (isPush(change, smash)) {
         var path = change.path.split('.');
@@ -48,7 +48,7 @@ module.exports = function(list, smash){
   if (!Object.keys(query.$set).length) delete query.$set;
   if (!Object.keys(query.$unset).length) delete query.$unset;
   return {update: query};
-};
+}
 
 function isPush(change, smash){
   if (smash.isNeDB) return false;

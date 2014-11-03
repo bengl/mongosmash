@@ -4,8 +4,9 @@
   "description": "A JS Harmony MongoDB/NeDB ODM",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --harmony",
-    "bench": "node --harmony bench/test"
+    "test": "npm run compile && mocha --harmony",
+    "bench": "node --harmony bench/test",
+    "prepublish": "traceur --modules=commonjs --dir src lib"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,11 @@
   },
   "dependencies": {
     "bluebird": "~2.3.10",
-    "observed": "~1.1.0"
+    "observed": "~1.1.0",
+    "traceur-runtime": "0.0.59"
   },
   "devDependencies": {
+    "traceur": "0.0.72",
     "mongodb": "~1.4.19",
     "mongoose": "~3.8.18",
     "nedb": "~0.11.1"
