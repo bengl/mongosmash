@@ -32,9 +32,10 @@
     "traceur-runtime": "0.0.59"
   },
   "devDependencies": {
-    "traceur": "0.0.72",
+    "mocha": "^2.0.1",
     "mongodb": "~1.4.19",
     "mongoose": "~3.8.18",
-    "nedb": "~0.11.1"
+    "nedb": "~0.11.1",
+    "traceur": "0.0.72"
   }
 }
