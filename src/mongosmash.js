@@ -50,12 +50,15 @@ export class MongoSmash {
     args = Array.prototype.slice.call(args, 1);
     var col;
     if (!this.collections[model]) {
-      col = Promise.promisifyAll(this.db.collection(model));
+      col = this.db.collection(model);
       this.collections[model] = col;
     } else {
       col = this.collections[model];
     }
-    return col[op+'Async'].apply(col, args);
+    return new Promise(function(resolve, reject){
+      args.push(nodeifier(resolve, reject));
+      col[op].apply(col, args);
+    });
   }
 
   _observe (obj, model) {
@@ -74,7 +77,9 @@ export class MongoSmash {
       if (Array.isArray(results))
         return results.map(this._observeResults(model));
       else if (results.toArray)
-        return Promise.promisify(results.toArray, results)().then(this._observeResults(model));
+        return new Promise(function(resolve, reject){
+          results.toArray(nodeifier(resolve, reject));
+        }).then(this._observeResults(model));
       else
         return this._observe(results, model);
     };
@@ -140,10 +145,9 @@ export class MongoSmash {
       if (typeof result === 'object') {
         if (!Array.isArray(result)) {
           if (result.toArray){
-            return Promise.promisify(result.toArray, result)()
-              .then(function(results) {
-                return observeAndReturn(result[0], q);
-              });
+            return toArrayPromise(result).then(function(results) {
+              return observeAndReturn(result[0], q);
+            });
           }
           return observeAndReturn(result, q);
         } else if (Array.isArray(result)) {
@@ -162,3 +166,16 @@ export class MongoSmash {
 }
 
 function idOf(obj) { return {_id: obj._id}; }
+
+function nodeifier(resolve, reject) {
+  return function (err, result) {
+    if (err) reject(err);
+    else resolve(result);
+  }
+}
+
+function toArrayPromise(result) {
+  return new Promise(function(resolve, reject){
+    result.toArray(promisifier(resolve, reject));
+  });
+}

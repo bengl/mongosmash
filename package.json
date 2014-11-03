@@ -7,7 +7,8 @@
     "pretest": "traceur --modules=commonjs --dir src lib",
     "test": "mocha --harmony",
     "bench": "node --harmony bench/test",
-    "prepublish": "traceur --modules=commonjs --dir src lib"
+    "prepublish": "traceur --modules=commonjs --dir src lib",
+    "coverage": "node --harmony node_modules/.bin/istanbul cover node_modules/.bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "co-mocha": "^1.0.3",
+    "istanbul": "^0.3.2",
     "mocha": "^2.0.1",
     "mongodb": "~1.4.19",
     "mongoose": "~3.8.18",
