@@ -1,6 +1,5 @@
 import observed from 'observed';
 import {queryGenerator} from './queryGenerator';
-import Promise from 'bluebird';
 
 class NeDBWrapper {
 
@@ -56,7 +55,7 @@ export class MongoSmash {
       col = this.collections[model];
     }
     return new Promise(function(resolve, reject){
-      args.push(nodeifier(resolve, reject));
+      args.push(promisifier(resolve, reject));
       col[op].apply(col, args);
     });
   }
@@ -77,9 +76,7 @@ export class MongoSmash {
       if (Array.isArray(results))
         return results.map(this._observeResults(model));
       else if (results.toArray)
-        return new Promise(function(resolve, reject){
-          results.toArray(nodeifier(resolve, reject));
-        }).then(this._observeResults(model));
+        return toArrayPromise(results).then(this._observeResults(model));
       else
         return this._observe(results, model);
     };
@@ -106,11 +103,11 @@ export class MongoSmash {
   }
 
   find (model, query, cb) {
-    return this._find(model, query).then(this._observeResults(model)).nodeify(cb);
+    return nodeify(this._find(model, query).then(this._observeResults(model)), cb);
   }
 
   findOne (model, query, cb) {
-    return this._findOne(model, query).then(this._observeResults(model)).nodeify(cb);
+    return nodeify(this._findOne(model, query).then(this._observeResults(model)), cb);
   }
 
   new (model, obj) {
@@ -120,13 +117,13 @@ export class MongoSmash {
 
   create (model, obj, cb) {
     this.new(model, obj);
-    return this.save(obj).nodeify(cb);
+    return nodeify(this.save(obj), cb);
   }
 
   delete (obj, cb) {
     let paramTwo = this.isNeDB ? {} : true;
-    return this._remove(this.modelnames.get(obj), idOf(obj), paramTwo)
-      .then(() => this.changelists.set(obj, [])).nodeify(cb);
+    return nodeify(this._remove(this.modelnames.get(obj), idOf(obj), paramTwo)
+      .then(() => this.changelists.set(obj, [])), cb);
   }
 
   save (obj, cb) {
@@ -156,18 +153,18 @@ export class MongoSmash {
       }
       return result;
     };
-    return (
+    return nodeify((
         q.insert ? this._insert(model, obj) :
         q.update ? this._update(model, idOf(obj), q.update) :
         Promise.resolve()
-        ).then(after).nodeify(cb);
+        ).then(after), cb);
   }
 
 }
 
 function idOf(obj) { return {_id: obj._id}; }
 
-function nodeifier(resolve, reject) {
+function promisifier(resolve, reject) {
   return function (err, result) {
     if (err) reject(err);
     else resolve(result);
@@ -178,4 +175,15 @@ function toArrayPromise(result) {
   return new Promise(function(resolve, reject){
     result.toArray(promisifier(resolve, reject));
   });
+}
+
+function nodeify(p, cb) {
+  if (cb) {
+    p.then(function(result) {
+      cb(null, result);
+    }, function(err) {
+      cb(err);
+    });
+  }
+  return p;
 }

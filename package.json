@@ -28,7 +28,6 @@
     "url": "https://github.com/bengl/mongosmash/issues"
   },
   "dependencies": {
-    "bluebird": "~2.3.10",
     "observed": "~1.1.0",
     "traceur-runtime": "0.0.59"
   },

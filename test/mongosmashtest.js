@@ -1,8 +1,7 @@
 var assert = require('assert');
 var MongoSmash = require('../index');
 var nedb = require('nedb');
-var Promise = require('bluebird');
-var mongodb = Promise.promisifyAll(require('mongodb').MongoClient);
+var mongodb = require('mongodb').MongoClient;
 require('co-mocha');
 
 var url = 'mongodb://127.0.0.1:27017/test';
@@ -11,19 +10,22 @@ function commonTests(type) {
   context(type, function(){
     var smash;
 
-    before(function*(){
+    before(function(done){
       if (type === 'nedb') {
         smash = new MongoSmash(nedb);
+        done();
       } else if (type === 'mongodb') {
         var mongodb = require('mongodb').MongoClient;
-        var db = yield mongodb.connectAsync(url);
-        smash = new MongoSmash(db);
+        mongodb.connect(url, function(err, db){
+          smash = new MongoSmash(db);
+          done();
+        });
       }
     });
 
     if (type === 'mongodb') {
-      after(function*(){
-        yield Promise.promisifyAll(smash.db.collection('things')).dropAsync();
+      after(function(done){
+        smash.db.collection('things').drop(done);
       });
     }
 
