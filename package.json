@@ -32,11 +32,11 @@
     "traceur-runtime": "0.0.59"
   },
   "devDependencies": {
+    "co-mocha": "^1.0.3",
     "mocha": "^2.0.1",
     "mongodb": "~1.4.19",
     "mongoose": "~3.8.18",
     "nedb": "~0.11.1",
-    "sweet.js": "^0.7.2",
     "traceur": "0.0.72"
   }
 }

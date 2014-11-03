@@ -1,14 +1,5 @@
-macro @ {
-  rule { . } => {
-    this.
-  }
-  rule {} => {
-    this.
-  }
-}
-
 import observed from 'observed';
-import queryGenerator from './queryGenerator';
+import {queryGenerator} from './queryGenerator';
 import Promise from 'bluebird';
 
 class NeDBWrapper {
@@ -27,7 +18,7 @@ class NeDBWrapper {
 
 }
 
-export default class MongoSmash {
+export class MongoSmash {
 
   constructor (db) {
     if (!(this instanceof MongoSmash)) return new MongoSmash(db);
@@ -71,7 +62,7 @@ export default class MongoSmash {
     this.modelnames.set(obj, model);
     let observer = observed(obj);
     observer.on('change', changes => this._handleChanges(obj, changes));
-    let oldObserver = this.observfers.get(obj);
+    let oldObserver = this.observers.get(obj);
     if (oldObserver) oldObserver.stop();
     this.observers.set(obj, observer);
     return obj;

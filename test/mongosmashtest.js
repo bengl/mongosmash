@@ -3,6 +3,7 @@ var MongoSmash = require('../index');
 var nedb = require('nedb');
 var Promise = require('bluebird');
 var mongodb = Promise.promisifyAll(require('mongodb').MongoClient);
+require('co-mocha');
 
 var url = 'mongodb://127.0.0.1:27017/test';
 
