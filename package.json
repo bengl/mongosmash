@@ -4,7 +4,8 @@
   "description": "A JS Harmony MongoDB/NeDB ODM",
   "main": "index.js",
   "scripts": {
-    "test": "npm run compile && mocha --harmony",
+    "pretest": "traceur --modules=commonjs --dir src lib",
+    "test": "mocha --harmony",
     "bench": "node --harmony bench/test",
     "prepublish": "traceur --modules=commonjs --dir src lib"
   },
