@@ -6,11 +6,7 @@
 [![Code Climate](https://codeclimate.com/github/bengl/mongosmash.png)](https://codeclimate.com/github/bengl/mongosmash)
 [![Dependency Status](https://gemnasium.com/bengl/mongosmash.png)](https://gemnasium.com/bengl/mongosmash)
 
-**MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you
-treat JavaScript object as normal, and have changes persisted to MongoDB or
-NeDB. MongoSmash is implemented using `Object.observe`, and so is subject to its
-limitations on changes it can track, and requires Node 0.11.10+. You'll need to
-invoke node with the `--harmony` flag.
+**MongoSmash** is a super-minimal MongoDB/NeDB ODM for Node.js. It lets you treat JavaScript object as normal, and have changes persisted to MongoDB or NeDB. Unlike Mongoose, MongoSmash does not require the use of schemas, so you can truly take advantage of the schemaless nature of your DB if you want. MongoSmash is implemented using `Object.observe`, and so is subject to its limitations on changes it can track, and requires Node 0.11.10+. You'll need to invoke node with the `--harmony` flag.
 
 **WARNING: MongoSmash is incomplete. It works, but it's missing a lot of
 features!**
@@ -30,7 +26,7 @@ require('mongodb').MongoClient.connect(dbURI, function(err, db) {
   smash.new('dog', fido); // adds observers. 'dog' is the mongodb collection name
   smash.save(fido, function(err, savedFido) { // savedFido has a _id
     if (err) throw err;
-    
+
     savedFido.owner = 'Joe';
     smash.save(fido, function(err) { // no savedFido this time since it's an update
       if (err) throw err;
@@ -75,10 +71,14 @@ delete        | 5.915           | 6.99              | 18.17
 
 Of course a head-to-head comparison with Mongoose isn't necessarily realistic,
 since MongoSmash doesn't do things like validations. I recommend using a tool
-like [revalidator](https://github.com/flatiron/revalidator) to do your object
-validations.
+like [revalidator](https://github.com/flatiron/revalidator) or
+[Joi](https://github.com/hapijs/joi) to do your object validations.
 
 ## API
+
+> **Note**: All the `callback`s are the usual error-first callbacks you expect from
+asynchronous node.js APIs. In addition, if you omit the callback, a Promise is
+returned.
 
 ### `new MongoSmash(db)`
 You **must** pass in either an already-connected MongoDB connection (from
@@ -107,11 +107,7 @@ Deletes `obj` from the database, callback only takes in error.
 
 ## Contributing
 
-Please do! Pull requests, bug reports and feature requests are more than 
-welcome, and should be done using Github PRs and Issues. Please try to conform
-to existing style (though I'm not very stylish), and don't forget tests and
-docs! Also, if making a performance improvement, feel free to update the
-benchmark data. TODOs are in Github Issues.
+Please do! See CONTRIBUTING.md
 
 ## LICENSE
 
