@@ -16,6 +16,7 @@ function commonTests(type) {
     } else if (type === 'mongodb') {
       var mongodb = require('mongodb').MongoClient;
       mongodb.connect(url, function(err, db){
+        if (err) return done(err);
         smash = new MongoSmash(db);
         done();
       });
