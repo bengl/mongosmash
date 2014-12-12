@@ -123,6 +123,9 @@ export class MongoSmash {
     this.observers.get(obj).deliverChanges();
     let q = queryGenerator(this.changelists.get(obj) || [], this);
     if (q.insert || q.update) model = this.modelnames.get(obj);
+    if (!this.isNeDB && hasUserPrototype(obj)) {
+      obj = shallowCopy(obj); // otherwise mongodb saves the prototype properties
+    }
     return nodeify((
       q.insert ? this._insert(model, obj) :
       q.update ? this._update(model, idOf(obj), q.update) :
@@ -159,4 +162,14 @@ function nodeify(p, cb) {
     });
   }
   return p;
+}
+
+function hasUserPrototype(obj) {
+  return Object.getPrototypeOf(obj) !== Object.prototype;
+}
+
+function shallowCopy(obj) {
+  var copy = {};
+  Object.keys(obj).forEach((k) => copy[k] = obj[k]);
+  return copy;
 }

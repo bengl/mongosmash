@@ -83,6 +83,18 @@ function commonTests(type) {
       done();
     });
   });
+
+  it('does not persist prototypes', function*(){
+    var proto = {protoFoo: 'protoPhooey'};
+    var obj = {foo: 'phooey'};
+    obj.__proto__ = proto;
+    assert(obj.foo);
+    assert(obj.protoFoo);
+    var result = yield smash.create('things', obj);
+    result = yield smash.find('things', {_id: result._id});
+    assert(result[0].foo);
+    assert(!result[0].protoFoo);
+  });
 }
 
 describe('MongoSmash', function(){
